@@ -772,7 +772,7 @@ with tabs[0]:
         tk["yaxis"]["tickfont"]  = dict(size=11, color=T["ink_3"])
         tk["xaxis"]["title"]     = dict(text="Enforcement Measures", font=dict(size=10, color=T["ink_4"]))
         fig.update_layout(**tk, barmode="stack", bargap=0.35)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     with col_aside:
         by_type = summary.groupby("enforcement_type")["total_measures"].sum()
@@ -844,7 +844,7 @@ with tabs[0]:
         marker=dict(line=dict(width=1.5, color=T["bg"])),
         hovertemplate="<b>%{label}</b><br>%{value:,} actions<extra></extra>",
     )
-    st.plotly_chart(fig_tm, use_container_width=True)
+    st.plotly_chart(fig_tm, width="stretch")
     st.markdown("</div>", unsafe_allow_html=True)
 
 
@@ -946,14 +946,14 @@ with tabs[1]:
             tk_p["yaxis"]["ticksuffix"] = "%"
             tk_p["bargap"]             = 0.5
             fig_perf.update_layout(**tk_p, showlegend=False)
-            st.plotly_chart(fig_perf, use_container_width=True)
+            st.plotly_chart(fig_perf, width="stretch")
 
             st.markdown('<div class="chart-label" style="margin-top:32px">System Performance Radar</div>', unsafe_allow_html=True)
             fig_r = go.Figure(go.Scatterpolar(
                 r=[accuracy * 100, precision_v * 100, recall_v * 100, accuracy * 100],
                 theta=["Accuracy", "Precision", "Recall", "Accuracy"],
                 fill="toself",
-                fillcolor=f"{T['ink']}10",
+                fillcolor="rgba(13,13,13,0.06)",
                 line=dict(color=T["ink"], width=1.5),
                 mode="lines",
             ))
@@ -968,7 +968,7 @@ with tabs[1]:
                                      tickfont=dict(size=10, color=T["ink_3"])),
                 ),
             )
-            st.plotly_chart(fig_r, use_container_width=True)
+            st.plotly_chart(fig_r, width="stretch")
 
         with col_right:
             st.markdown(f"""
@@ -1009,7 +1009,7 @@ with tabs[1]:
                 font=dict(size=16, color=T["ink"], family="JetBrains Mono, monospace"),
             )
             fig_d.update_layout(**chart_theme(240), showlegend=False)
-            st.plotly_chart(fig_d, use_container_width=True)
+            st.plotly_chart(fig_d, width="stretch")
             st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown(f"""
@@ -1115,7 +1115,7 @@ with tabs[2]:
         tk_eq["xaxis"]["title"]    = dict(text="Rate vs Platform Average",
                                           font=dict(size=10, color=T["ink_4"]))
         fig_eq.update_layout(**tk_eq, bargap=0.30)
-        st.plotly_chart(fig_eq, use_container_width=True)
+        st.plotly_chart(fig_eq, width="stretch")
 
     with col_side:
         st.markdown('<div class="chart-label">Severity Distribution</div>', unsafe_allow_html=True)
@@ -1137,7 +1137,7 @@ with tabs[2]:
             hovertemplate="<b>%{x}</b><br>%{y} categories<extra></extra>",
         ))
         fig_sev.update_layout(**chart_theme(220), showlegend=False, bargap=0.45)
-        st.plotly_chart(fig_sev, use_container_width=True)
+        st.plotly_chart(fig_sev, width="stretch")
 
         st.markdown(f"""
 <div style="margin-top:16px">
@@ -1158,7 +1158,7 @@ with tabs[2]:
             tk_z["xaxis"]["title"] = dict(text="Z-Score", font=dict(size=10, color=T["ink_4"]))
             tk_z["yaxis"]["title"] = dict(text="Count",   font=dict(size=10, color=T["ink_4"]))
             fig_z.update_layout(**tk_z, showlegend=False)
-            st.plotly_chart(fig_z, use_container_width=True)
+            st.plotly_chart(fig_z, width="stretch")
 
         st.markdown('<div class="chart-label" style="margin-top:24px">By Enforcement Type</div>', unsafe_allow_html=True)
         by_type_eq = equity.groupby("enforcement_type").agg(
@@ -1206,7 +1206,7 @@ with tabs[2]:
     tk_sc["xaxis"]["title"] = dict(text="Category Removals", font=dict(size=10, color=T["ink_4"]))
     tk_sc["yaxis"]["title"] = dict(text="Enforcement Z-Score", font=dict(size=10, color=T["ink_4"]))
     fig_sc.update_layout(**tk_sc)
-    st.plotly_chart(fig_sc, use_container_width=True)
+    st.plotly_chart(fig_sc, width="stretch")
 
     # ── Methodology block ─────────────────────────────────────────────────────
     st.markdown(f"""
@@ -1239,7 +1239,7 @@ with tabs[2]:
         avail = [c for c in disp if c in flagged_df.columns]
         show  = flagged_df[avail].sort_values("removal_rate_vs_platform_avg", ascending=False).copy()
         show.columns = [c.replace("_", " ").title() for c in show.columns]
-        st.dataframe(show, use_container_width=True, hide_index=True)
+        st.dataframe(show, width="stretch", hide_index=True)
 
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -1380,7 +1380,7 @@ with tabs[3]:
             tk_r["yaxis"]["ticksuffix"] = "%"
             tk_r["bargap"]              = 0.5
             fig_reg.update_layout(**tk_r, showlegend=False)
-            st.plotly_chart(fig_reg, use_container_width=True)
+            st.plotly_chart(fig_reg, width="stretch")
 
             st.markdown('<div class="chart-label" style="margin-top:32px">Equity Audit Summary</div>', unsafe_allow_html=True)
             pct_f = rr.get("pct_categories_flagged") or 0.0
