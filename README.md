@@ -1,25 +1,12 @@
 # DSA Compliance Intelligence
 
-A production-quality dbt + DuckDB analytics project for Digital Services Act (DSA)
-transparency reporting. Built to demonstrate how compliance-oriented data infrastructure
-should work: auditable, tested, documented, and fair
+dbt + DuckDB analytics project!
 
 ---
 
 ## Data Sources
 
-**Primary:** DSA Transparency Report XLSX (2025 annual report)
-- Sheet 5: Own-initiative illegal content enforcement
-- Sheet 6: Own-initiative Terms and Conditions enforcement
-- Sheet 7: Internal complaints and appeals data
-- Sheet 8: Automated moderation system performance metrics
-- Sheet 3: Government orders from EU member states
-- Sheet 4: User-submitted notices and Trusted Flagger reports
-
-**Secondary (attempted):** EU DSA Transparency Database API
-- Endpoint: `https://transparency.dsa.ec.europa.eu/api/v1/statements`
-- Status: API returned 405 during ingestion; gracefully skipped
-- Architecture: ingestion pipeline handles this automatically
+**Primary:** Spotify DSA Transparency Report XLSX (2025 annual report)
 
 ---
 
@@ -88,18 +75,6 @@ data can encode existing biases, suppressing content from under-represented comm
 at higher rates than the platform average. The 1.5x threshold is analogous to the
 EEOC 4/5ths rule applied to content enforcement rather than employment.
 
-Surfacing this in auditable, version-controlled dbt models means:
-1. It runs automatically every time new data is ingested
-2. It is testable (dbt tests validate the flags and severity classifications)
-3. It is explainable: the methodology note is embedded in every row of `mart_equity_audit`
-4. It creates an audit trail for DSA Article 34 systemic risk documentation
-
-**What overturn rates would add:**
-
-The public DSA report does not disclose category-level appeal outcomes. A production
-version would join to an internal case management source to surface per-category
-reversal rates. A category with a high removal rate *and* a high overturn rate is the
-strongest signal of systematic over-enforcement.
 
 ---
 
