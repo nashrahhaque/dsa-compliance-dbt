@@ -3,8 +3,7 @@ target/
 dbt_packages/
 logs/
 
-# DuckDB
-*.duckdb
+# DuckDB (dev.duckdb is committed for Streamlit Cloud deployment)
 *.duckdb.wal
 
 # Python
