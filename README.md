@@ -2,26 +2,7 @@
 
 A production-quality dbt + DuckDB analytics project for Digital Services Act (DSA)
 transparency reporting. Built to demonstrate how compliance-oriented data infrastructure
-should work: auditable, tested, documented, and fair.
-
----
-
-## Why I built this
-
-The EU Digital Services Act legally requires large online platforms to publish annual
-transparency reports covering enforcement actions, appeal outcomes, and automated
-moderation metrics. But publishing a PDF is not enough. Legal and policy teams need
-*infrastructure*: data that is versioned, tested, queryable, and explainable to regulators.
-
-The hardest part of DSA compliance is not the reporting itself. It is answering follow-up
-questions from legal counsel six months later: "Why did enforcement spike in this category?"
-"Is our automation over-flagging a specific content type?" "Can we prove our moderation
-is proportionate?" Without auditable data infrastructure, those questions are answered
-with spreadsheets and guesswork.
-
-This project builds that infrastructure layer, and adds one thing most compliance pipelines
-skip: a fairness audit. Because the data shows not just *how much* content was removed,
-but *which* content, and whether enforcement was distributed proportionately across categories.
+should work: auditable, tested, documented, and fair
 
 ---
 
@@ -84,9 +65,6 @@ dsa-compliance-dbt/
 - **Marts** are the tables that stakeholders actually query. They join intermediate
   models together into denormalized, self-explanatory tables designed for specific
   audiences: legal teams, policy leads, dashboards.
-
-This separation means that when source data changes, only the affected layer needs
-to be updated. Every transformation is independently testable.
 
 ---
 
@@ -203,5 +181,3 @@ streamlit run dashboard.py
 - `accepted_values` on categorical columns (enforcement_type, severity, trend_direction)
 - Custom test: `assert_appeals_not_exceed_removals`
 - Source schema validation via `sources.yml`
-
-All 53 tests pass green.
