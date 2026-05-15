@@ -1,5 +1,5 @@
 duckdb>=1.2.0
-streamlit==1.41.0
-plotly==5.22.0
-pandas==2.2.1
+streamlit>=1.40.0
+plotly>=5.19.0
+pandas>=2.0.0
 pillow>=11.0.0
