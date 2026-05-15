@@ -16,8 +16,6 @@ build/
 .venv/
 venv/
 
-# Streamlit
-.streamlit/
 
 # macOS
 .DS_Store
