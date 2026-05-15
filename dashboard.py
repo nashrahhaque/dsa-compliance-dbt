@@ -889,7 +889,7 @@ with tabs[1]:
     </div>
     <div class="stat-cell">
       <div class="stat-label">Appeal Rate</div>
-      <div class="stat-number">{appeal_rate*100:.4f}%</div>
+      <div class="stat-number">{appeal_rate*100:.2f}%</div>
       <div class="stat-sub">Complaints per moderation action</div>
     </div>
     <div class="stat-cell">
@@ -1357,7 +1357,7 @@ with tabs[3]:
             data_row("User complaints received",
                      f"{int(rr.get('user_complaints_received') or 0):,}", "cobalt")
             data_row("Appeal rate",
-                     f"{rr.get('appeal_rate_pct') or 0:.4f}%", "muted")
+                     f"{rr.get("appeal_rate_pct") or 0:.2f}%", "muted")
             data_row("Automation rate",
                      f"{rr.get('automation_rate_pct') or 0:.1f}%", "muted")
 
