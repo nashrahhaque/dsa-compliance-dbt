@@ -656,8 +656,8 @@ total_automated  = int(summary["automated_measures"].sum())
 auto_pct         = total_automated / max(total_measures, 1) * 100
 n_flagged        = int(equity["disparate_impact_flag"].sum())
 
-ap = appeals.iloc[0] if not appeals.empty else {}
-rr = reg.iloc[0] if not reg.empty else {}
+ap = appeals.iloc[0].to_dict() if not appeals.empty else {}
+rr = reg.iloc[0].to_dict() if not reg.empty else {}
 
 
 # ══════════════════════════════════════════════════════════════════════════════
