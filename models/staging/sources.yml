@@ -1,0 +1,91 @@
+version: 2
+
+sources:
+  - name: spotify_raw
+    description: >
+      Raw tables loaded from the Spotify DSA Transparency Report 2025 XLSX
+      via scripts/ingest.py. Schema 'raw' in dev.duckdb.
+    schema: raw
+    tables:
+      - name: own_initiative_illegal
+        description: >
+          Proactive enforcement actions by Spotify against illegal content
+          (EU DSA Article 16 scope). One row per content category.
+          Source: XLSX sheet 5_own_initiative_illegal.
+        columns:
+          - name: category_of_illegal_content
+            description: DSA category code for the type of illegal content
+          - name: num_measures_own_initiative
+            description: Total enforcement actions proactively initiated by Spotify
+          - name: num_measures_automated
+            description: Subset of actions triggered solely by automated detection
+          - name: visibility_removal
+            description: Number of items removed from the platform
+          - name: account_termination
+            description: Number of account terminations issued
+
+      - name: own_initiative_tc
+        description: >
+          Proactive enforcement actions by Spotify against Terms & Conditions
+          violations. One row per TC violation category.
+          Source: XLSX sheet 6_own_initiative_TC.
+        columns:
+          - name: category_tc
+            description: Spotify internal category code for the TC violation type
+          - name: num_measures_own_initiative
+            description: Total proactive enforcement actions for this TC category
+          - name: num_measures_automated
+            description: Subset detected and actioned solely by automated means
+
+      - name: appeals
+        description: >
+          Internal complaints mechanism data. Extremely sparse  -  only aggregate
+          complaint count for the full reporting period.
+          Source: XLSX sheet 7_appeals_and_recidivism.
+        columns:
+          - name: indicator
+            description: The metric being reported (e.g. total complaints submitted)
+          - name: value
+            description: Numeric value for the indicator
+
+      - name: automated_means
+        description: >
+          Performance metrics for Spotify's automated content moderation systems
+          including accuracy, precision, and recall.
+          Source: XLSX sheet 8_automated_means.
+        columns:
+          - name: indicator
+            description: Metric name (accuracy, precision, recall, volume)
+          - name: value
+            description: Metric value  -  rates expressed as decimals (0-1), counts as integers
+
+      - name: member_states_orders
+        description: >
+          Government and authority orders received from EU member states requiring
+          Spotify to act against illegal content or provide information.
+          Source: XLSX sheet 3_member_states_orders.
+        columns:
+          - name: scope
+            description: Geographic scope  -  TOTAL or specific EU member state code
+          - name: num_orders_against_illegal
+            description: Number of removal orders received from authorities
+
+      - name: notices
+        description: >
+          Notices submitted by users and Trusted Flaggers reporting illegal content.
+          Source: XLSX sheet 4_notices.
+        columns:
+          - name: num_notices_received
+            description: Total notices received for this content category
+          - name: num_actions_law
+            description: Enforcement actions taken on legal grounds following notice
+
+      - name: categories
+        description: >
+          Reference table mapping category codes to human-readable labels.
+          Source: XLSX sheet 2_categories_names.
+        columns:
+          - name: category_code
+            description: DSA category identifier used across enforcement sheets
+          - name: category_description
+            description: Human-readable description of the content category

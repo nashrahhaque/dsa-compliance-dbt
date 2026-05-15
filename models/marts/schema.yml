@@ -1,0 +1,120 @@
+version: 2
+
+models:
+  - name: mart_enforcement_summary
+    description: >
+      Combined enforcement and appeal summary for T&S engineers and legal/policy
+      teams. Grain: one row per (enforcement_type, category). Joins enforcement
+      trends, equity flags, and period-level appeal context into a single table
+      for dashboarding and legal export.
+    columns:
+      - name: enforcement_type
+        description: illegal_content or terms_and_conditions
+        tests:
+          - not_null
+      - name: category
+        description: DSA or TC category code
+        tests:
+          - not_null
+      - name: reporting_period
+        description: Reporting interval
+        tests:
+          - not_null
+      - name: total_measures
+        description: Total proactive enforcement measures for this category
+        tests:
+          - not_null
+      - name: is_high_risk_category
+        description: True for CSAM, terrorism, hate speech categories
+        tests:
+          - not_null
+      - name: disparate_impact_flag
+        description: True if removal rate exceeds 1.5× platform average
+      - name: legal_review_priority
+        description: Combined risk classification for legal prioritization
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 'high_risk_and_disparate_impact'
+                - 'high_risk_category'
+                - 'disparate_impact_only'
+                - 'standard'
+
+  - name: mart_regulatory_summary
+    description: >
+      Quarterly compliance rollup designed for non-technical legal and regulatory
+      audiences. Grain: one row per reporting period. Presents DSA compliance KPIs
+      in plain-language format. QoQ columns are pre-structured and will populate
+      when prior-period data is ingested.
+    columns:
+      - name: reporting_period
+        description: DSA reporting interval
+        tests:
+          - not_null
+          - unique
+      - name: service_name
+        description: Always 'Spotify Main' for this dataset
+        tests:
+          - not_null
+      - name: total_enforcement_actions
+        description: Total proactive enforcement actions across all categories
+      - name: user_complaints_received
+        description: Complaints submitted via DSA Article 20 internal mechanism
+        tests:
+          - not_null
+      - name: compliance_concern_flagged
+        description: Boolean  -  true if appeal rate or automation ratio triggers a concern
+        tests:
+          - not_null
+      - name: dsa_article_16_notices_reported
+        description: Compliance checkbox  -  notices from users and Trusted Flaggers reported
+        tests:
+          - not_null
+      - name: dsa_article_20_complaint_mechanism_reported
+        description: Compliance checkbox  -  internal complaint mechanism data reported
+        tests:
+          - not_null
+
+  - name: mart_equity_audit
+    description: >
+      Final equity audit table for DSA Article 34 systemic risk documentation.
+      Grain: one row per (enforcement_type, category). Surfaces disparate impact
+      flags, enforcement z-scores, share deviations from uniform distribution,
+      and audit action recommendations for legal review. Methodology note is
+      embedded in each row for auditability.
+    columns:
+      - name: category_code
+        description: Raw DSA or TC category identifier
+        tests:
+          - not_null
+      - name: enforcement_type
+        description: illegal_content or terms_and_conditions
+        tests:
+          - not_null
+      - name: category_removals
+        description: Content removal actions for this category
+        tests:
+          - not_null
+      - name: removal_rate_vs_platform_avg
+        description: >
+          Category removal count / per-category platform average.
+          Values above 1.5 are flagged for disparate impact.
+      - name: disparate_impact_flag
+        description: True if removal_rate_vs_platform_avg > 1.5
+        tests:
+          - not_null
+      - name: disparate_impact_severity
+        description: critical / high / moderate / within_norms
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['critical', 'high', 'moderate', 'within_norms']
+      - name: audit_action
+        description: Plain-language recommendation for legal and policy teams
+        tests:
+          - not_null
+      - name: methodology_note
+        description: Embedded audit trail explaining computation methodology and data sources
+        tests:
+          - not_null

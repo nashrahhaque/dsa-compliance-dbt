@@ -1,0 +1,116 @@
+version: 2
+
+models:
+  - name: int_enforcement_trends
+    description: >
+      Category-level enforcement volume analysis with trend indicators.
+      Grain: one row per (enforcement_type, category). Ordered by enforcement
+      volume to surface the most impactful content areas for T&S policy reviews.
+      Uses the period_over_period macro to demonstrate LAG() pattern; extends
+      naturally to multi-period time series when future DSA reports are ingested.
+    columns:
+      - name: enforcement_type
+        description: illegal_content or terms_and_conditions
+        tests:
+          - not_null
+      - name: category
+        description: Content or TC violation category code
+        tests:
+          - not_null
+      - name: reporting_period
+        description: DSA reporting period interval
+        tests:
+          - not_null
+      - name: total_measures
+        description: Total proactive enforcement measures for this category
+        tests:
+          - not_null
+      - name: automation_rate
+        description: Fraction of measures actioned solely by automated systems
+      - name: volume_rank
+        description: Category rank by enforcement volume within its enforcement type (1 = highest)
+        tests:
+          - not_null
+      - name: trend_direction
+        description: >
+          Relative difference from the previous-ranked category.
+          Values: higher_than_prev, lower_than_prev, equal_or_baseline.
+        tests:
+          - accepted_values:
+              values: ['higher_than_prev', 'lower_than_prev', 'equal_or_baseline']
+      - name: enforcement_tier
+        description: Volume bucket  -  top_5, top_10, or long_tail
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['top_5', 'top_10', 'long_tail']
+
+  - name: int_appeal_outcomes
+    description: >
+      Appeal and compliance metrics at the reporting-period level. Grain: one row
+      per reporting period. Used by legal counsel and policy leads to assess DSA
+      Article 20 compliance (internal complaint mechanism) and flag automation
+      over-reliance risk. Note: Spotify's 2025 report discloses only aggregate
+      appeal counts; per-category appeal rates are not yet available.
+    columns:
+      - name: reporting_period
+        description: DSA reporting period
+        tests:
+          - not_null
+          - unique
+      - name: total_complaints_submitted
+        description: Total complaints received via DSA Article 20 mechanism
+        tests:
+          - not_null
+      - name: appeal_rate
+        description: Complaints as a fraction of total moderation actions
+      - name: compliance_risk_flag
+        description: True if appeal rate > 5% or human review share < 10%
+        tests:
+          - not_null
+      - name: compliance_risk_description
+        description: Human-readable explanation of the compliance risk, or confirmation that metrics are within thresholds
+
+  - name: int_enforcement_equity
+    description: >
+      Disparate impact analysis comparing each category's enforcement rate to
+      the platform average. Grain: one row per (enforcement_type, category).
+      Categories exceeding 1.5× the platform average are flagged for potential
+      over-enforcement review. Methodology follows algorithmic fairness heuristics
+      analogous to the EEOC 80% rule applied to content moderation outcomes.
+      Output feeds mart_equity_audit.sql for legal and policy stakeholders.
+    columns:
+      - name: enforcement_type
+        description: illegal_content or terms_and_conditions
+        tests:
+          - not_null
+      - name: category
+        description: Content category code
+        tests:
+          - not_null
+      - name: category_removals
+        description: Total removal actions in this category for the reporting period
+        tests:
+          - not_null
+      - name: removal_rate_vs_platform_avg
+        description: >
+          This category's removal count divided by the per-category platform average.
+          Values > 1.5 trigger disparate_impact_flag.
+      - name: disparate_impact_flag
+        description: True if removal rate exceeds 1.5× platform average
+        tests:
+          - not_null
+      - name: disparate_impact_severity
+        description: >
+          Severity tier for flagged categories.
+          Values: critical (>3×), high (>2×), moderate (>1.5×), within_norms.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['critical', 'high', 'moderate', 'within_norms']
+      - name: enforcement_z_score
+        description: Z-score of this category's removal count relative to mean and stddev across all categories
+      - name: share_deviation_from_uniform
+        description: >
+          Difference between this category's actual share of total removals and
+          the expected uniform share (1/num_categories). Positive = over-enforced.

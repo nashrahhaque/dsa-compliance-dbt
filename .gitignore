@@ -1,0 +1,27 @@
+# dbt artifacts
+target/
+dbt_packages/
+logs/
+
+# DuckDB
+*.duckdb
+*.duckdb.wal
+
+# Python
+__pycache__/
+*.py[cod]
+.env
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Streamlit
+.streamlit/
+
+# macOS
+.DS_Store
+
+# Raw data - do not commit source files
+data/

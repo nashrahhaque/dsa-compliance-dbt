@@ -1,0 +1,123 @@
+version: 2
+
+models:
+  - name: stg_spotify_dsa_removals
+    description: >
+      Staging model unioning illegal content and Terms & Conditions enforcement
+      actions from Spotify's DSA Transparency Report 2025. Grain: one row per
+      (enforcement_type, category). Used by T&S engineers and compliance analysts
+      to understand the breakdown of enforcement actions across content policy areas.
+    columns:
+      - name: removal_id
+        description: Surrogate key  -  MD5 hash of (enforcement_type, category)
+        tests:
+          - not_null
+          - unique
+
+      - name: enforcement_type
+        description: >
+          Whether the action was triggered by EU illegal content rules
+          ('illegal_content') or Spotify's own Terms & Conditions
+          ('terms_and_conditions'). Null indicates a data quality issue.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['illegal_content', 'terms_and_conditions']
+
+      - name: category
+        description: >
+          DSA category code or Spotify TC category identifier.
+          TOTAL rows are filtered out at this layer.
+        tests:
+          - not_null
+
+      - name: reporting_period
+        description: ISO 8601 interval string for the report period (e.g. 2025-01-01/2025-12-31)
+        tests:
+          - not_null
+
+      - name: num_measures_own_initiative
+        description: >
+          Total enforcement measures Spotify proactively initiated (not triggered
+          by external notices or government orders). Null values from source are
+          coalesced to 0.
+        tests:
+          - not_null
+
+      - name: num_measures_automated
+        description: >
+          Subset of own-initiative measures detected and actioned solely by
+          automated systems with no human review. Coalesced to 0.
+
+      - name: visibility_removal
+        description: Content items removed from the platform entirely. Coalesced to 0.
+
+      - name: account_termination
+        description: >
+          Accounts permanently terminated. A count > 0 signals severe or repeated
+          violations. Coalesced to 0.
+
+      - name: total_enforcement_actions
+        description: >
+          Sum of all enforcement action types for this category (removal,
+          disable, demote, account actions, service actions, monetary actions).
+          Derived column  -  used in equity analysis as the denominator for
+          category-level enforcement rates.
+        tests:
+          - not_null
+
+      - name: is_high_risk_category
+        description: >
+          True if the category involves CSAM, terrorism, hate speech, or other
+          high-severity content types per DSA Article 34 risk definitions.
+          False otherwise. Used to flag categories requiring heightened oversight.
+        tests:
+          - not_null
+
+  - name: stg_spotify_dsa_appeals
+    description: >
+      Staging model combining internal complaint/appeal data with automated
+      moderation performance metrics. Grain: one row per reporting period.
+      Used by legal and policy teams to assess the appeal burden and automation
+      accuracy. NOTE: Spotify's 2025 DSA report discloses only aggregate appeal
+      counts; category-level appeal rates are not available in the source data.
+    columns:
+      - name: reporting_period
+        description: ISO 8601 reporting interval
+        tests:
+          - not_null
+          - unique
+
+      - name: total_complaints_submitted
+        description: >
+          Total internal complaints received through Spotify's Article 20 complaint
+          mechanism for the reporting period. Value: 1,448.
+        tests:
+          - not_null
+
+      - name: total_automated_actions
+        description: Enforcement actions taken solely by automated means (103,155)
+
+      - name: total_human_review_actions
+        description: Enforcement actions involving human reviewer (31,178)
+
+      - name: total_moderation_actions
+        description: Sum of automated and human-review actions. Used as denominator for appeal_rate.
+
+      - name: automation_accuracy
+        description: Overall accuracy of Spotify's automated moderation systems (0.999991)
+
+      - name: automation_precision
+        description: Precision of automated enforcement (0.998146)  -  low false-positive rate
+
+      - name: automation_recall
+        description: Recall of automated enforcement (0.943975)  -  content missed by automation
+
+      - name: appeal_rate
+        description: >
+          Ratio of total_complaints_submitted to total_moderation_actions.
+          Indicates what fraction of moderation decisions are disputed by users.
+          Low rate may indicate user friction in the appeals process.
+
+      - name: automation_rate
+        description: Fraction of all moderation actions taken solely by automation (~76.8%)
